@@ -1,0 +1,75 @@
+---
+title: "Weightlifting-Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Pastikan library yang dipakai kompatibel dengan R 4.0.0
+library(data.table)
+library(randomForest)
+library(caret)
+
+# URL dataset
+train_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
+# Load dataset dengan fread(), ubah ke data frame
+train_data <- fread(train_url, na.strings = c("NA", ""), data.table = FALSE)
+test_data <- fread(test_url, na.strings = c("NA", ""), data.table = FALSE)
+
+# Pastikan dataset berhasil di-load
+if (nrow(train_data) == 0 | ncol(train_data) == 0) {
+  stop("Data train kosong atau tidak berhasil di-load!")
+}
+if (nrow(test_data) == 0 | ncol(test_data) == 0) {
+  stop("Data test kosong atau tidak berhasil di-load!")
+}
+
+# Cek apakah kolom 'classe' ada
+if (!"classe" %in% colnames(train_data)) {
+  stop("Kolom 'classe' tidak ditemukan di train_data!")
+}
+
+# Konversi 'classe' ke faktor
+train_data$classe <- as.factor(train_data$classe)
+
+# Hapus kolom metadata (kolom 1 sampai 7)
+train_data <- train_data[, -c(1:7)]
+test_data <- test_data[, -c(1:7)]
+
+# Identifikasi kolom dengan lebih dari 90% NA dan hapus
+na_threshold <- 0.90
+na_counts <- colSums(is.na(train_data))
+cols_to_remove <- names(train_data)[na_counts / nrow(train_data) > na_threshold]
+
+train_data <- train_data[, !(names(train_data) %in% cols_to_remove)]
+test_data <- test_data[, !(names(test_data) %in% cols_to_remove)]
+
+# Imputasi nilai NA yang tersisa (gunakan median untuk angka biar lebih stabil)
+for (i in names(train_data)) {
+  if (any(is.na(train_data[[i]]))) {
+    if (is.numeric(train_data[[i]])) {
+      train_data[[i]][is.na(train_data[[i]])] <- median(train_data[[i]], na.rm = TRUE)
+      test_data[[i]][is.na(test_data[[i]])] <- median(test_data[[i]], na.rm = TRUE)
+    } else {
+      mode_val <- names(which.max(table(train_data[[i]])))
+      train_data[[i]][is.na(train_data[[i]])] <- mode_val
+      test_data[[i]][is.na(test_data[[i]])] <- mode_val
+    }
+  }
+}
+
+# Latih model Random Forest
+set.seed(123)
+modelRF <- randomForest(classe ~ ., data = train_data, ntree = 100, importance = TRUE)
+
+# Evaluasi model
+train_pred <- predict(modelRF, train_data)
+conf_matrix <- confusionMatrix(train_pred, train_data$classe)
+print(conf_matrix)
+
+# Prediksi pada test_data
+test_pred <- predict(modelRF, test_data)
+print(head(test_pred))

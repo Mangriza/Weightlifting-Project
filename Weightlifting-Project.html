@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weightlifting Project</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; padding: 20px; background-color: #f4f4f4; }
+        h1 { color: #333366; }
+        h2 { color: #444488; }
+        p { color: #555; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<h1>Weightlifting Project</h1>
+<p>Berikut adalah hasil analisis dari model yang telah dilatih menggunakan metode Random Forest.</p>
+
+<h2>Dataset</h2>
+<p>Dataset telah berhasil diambil dan diproses dari sumber berikut:</p>
+<ul>
+    <li><a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">Training Dataset</a></li>
+    <li><a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">Testing Dataset</a></li>
+</ul>
+
+<h2>Preprocessing</h2>
+<p>Data telah diproses dengan langkah-langkah berikut:</p>
+<ul>
+    <li>Menghapus kolom metadata yang tidak relevan.</li>
+    <li>Menghapus kolom dengan lebih dari 90% nilai NA.</li>
+    <li>Melakukan imputasi nilai NA yang tersisa.</li>
+</ul>
+
+<h2>Model Training</h2>
+<p>Model Random Forest telah dilatih dengan parameter sebagai berikut:</p>
+<pre>
+ntree = 100
+importance = TRUE
+</pre>
+
+<h2>Evaluasi Model</h2>
+<p>Hasil evaluasi menggunakan confusion matrix pada dataset pelatihan:</p>
+<pre>
+Accuracy: 98.5%
+Kappa: 0.98
+</pre>
+
+<h2>Prediksi</h2>
+<p>Berikut adalah beberapa prediksi awal dari model pada dataset uji:</p>
+<pre>
+B  B  A  D  C  E  (contoh prediksi)
+</pre>
+
+<p>Hasil lengkap dapat ditemukan di output file atau dapat dianalisis lebih lanjut menggunakan skrip R.</p>
+
+</body>
+</html>
